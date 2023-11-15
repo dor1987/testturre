@@ -68,10 +68,12 @@ while True:
         area = cv2.contourArea(contour)
 
         if min_area < area < max_area:
-            # Calculate the centroid of the contour
-            M = cv2.moments(contour)
-            cx = int(M["m10"] / (M["m00"] + 1e-5))
-            cy = int(M["m01"] / (M["m00"] + 1e-5))
+            # Calculate the bounding box of the contour
+            x, y, w, h = cv2.boundingRect(contour)
+
+            # Calculate the centroid of the bounding box
+            cx = x + w // 2
+            cy = y + h // 2
 
             # Your logic for aiming the turret using stepper motors
             # ...
@@ -82,15 +84,12 @@ while True:
 
             # Your logic for firing the Nerf gun
             shoot()
-            print("Movement detected")
+            print("Humanoid detected")
 
-            # Draw a green marker (circle) around the centroid
-            cv2.circle(frame, (cx, cy), 10, (0, 255, 0), -1)  # Green circle with radius 10
-
-            # Draw a red marker (dot) at the shooting spot
-            cv2.circle(frame, (cx, cy), 5, (0, 0, 255), -1)  # Red circle with radius 5
+            # Draw a green square around the bounding box
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         else:
-            print("Movement lost")
+            print("No humanoid detected")
 
     # Resize the frame to fit the specified screen size
     resized_frame = cv2.resize(frame, (screen_width, screen_height))
