@@ -50,6 +50,10 @@ delay_y = 0.01
 screen_width = 400
 screen_height = 240
 
+# Set the threshold for the centroid's position
+centroid_threshold_x = 0.4  # Adjust based on your preference
+centroid_threshold_y = 0.4  # Adjust based on your preference
+
 while True:
     ret, frame = cap.read()
 
@@ -82,9 +86,12 @@ while True:
             move_stepper_x(cx, delay_x)
             move_stepper_y(cy, delay_y)
 
-            # Your logic for firing the Nerf gun
-            shoot()
-            print("Humanoid detected")
+            # Check if the humanoid is around the middle of the screen
+            if (screen_width * (1 - centroid_threshold_x) < cx < screen_width * (1 + centroid_threshold_x)) and \
+               (screen_height * (1 - centroid_threshold_y) < cy < screen_height * (1 + centroid_threshold_y)):
+                # Your logic for firing the Nerf gun
+                shoot()
+                print("Humanoid detected in the shooting zone")
 
             # Draw a green square around the bounding box
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
