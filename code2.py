@@ -79,11 +79,14 @@ while True:
             # Your logic for firing the Nerf gun
             shoot()
             print("Movement detected")
+
+            # Draw a green marker (circle) around the centroid
+            cv2.circle(frame, (cx, cy), 10, (0, 255, 0), -1)  # Green circle with radius 10
         else:
             print("Movement lost")
 
     # Resize the frame to fit the 7-inch screen
-    resized_frame = cv2.resize(frame, (400, 240))  # Adjust the size as needed
+    resized_frame = cv2.resize(frame, (800, 480))  # Adjust the size as needed
 
     # Display the resized frame on the screen
     cv2.imshow("Live Video Feed", resized_frame)
