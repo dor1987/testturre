@@ -35,7 +35,7 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, cap_width)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cap_height)
 
 # Adjust these values based on your camera and environment
-min_area = 500
+min_area = 100  # Adjusted min_area
 max_area = 5000
 threshold = 25  # Adjust the threshold based on your environment
 
@@ -45,6 +45,10 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 # Define delay_x and delay_y
 delay_x = 0.01  # Adjust the delay based on your stepper motor and requirements
 delay_y = 0.01
+
+# Set screen size to 400x240
+screen_width = 400
+screen_height = 240
 
 while True:
     ret, frame = cap.read()
@@ -82,11 +86,14 @@ while True:
 
             # Draw a green marker (circle) around the centroid
             cv2.circle(frame, (cx, cy), 10, (0, 255, 0), -1)  # Green circle with radius 10
+
+            # Draw a red marker (dot) at the shooting spot
+            cv2.circle(frame, (cx, cy), 5, (0, 0, 255), -1)  # Red circle with radius 5
         else:
             print("Movement lost")
 
-    # Resize the frame to fit the 7-inch screen
-    resized_frame = cv2.resize(frame, (800, 480))  # Adjust the size as needed
+    # Resize the frame to fit the specified screen size
+    resized_frame = cv2.resize(frame, (screen_width, screen_height))
 
     # Display the resized frame on the screen
     cv2.imshow("Live Video Feed", resized_frame)
