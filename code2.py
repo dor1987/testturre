@@ -27,8 +27,12 @@ def move_stepper_y(steps, delay):
 def shoot():
     print("FIRE!")
 
-# Set up webcam
-cap = cv2.VideoCapture(0)  # 0 indicates the default camera
+# Set up webcam with custom resolution
+cap_width = 640  # Adjust as needed
+cap_height = 480  # Adjust as needed
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, cap_width)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cap_height)
 
 # Adjust these values based on your camera and environment
 min_area = 500
@@ -78,8 +82,11 @@ while True:
         else:
             print("Movement lost")
 
-    # Display the frame on the screen
-    cv2.imshow("Live Video Feed", frame)
+    # Resize the frame to fit the 7-inch screen
+    resized_frame = cv2.resize(frame, (800, 480))  # Adjust the size as needed
+
+    # Display the resized frame on the screen
+    cv2.imshow("Live Video Feed", resized_frame)
 
     # Break the loop if 'q' is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):
