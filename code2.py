@@ -73,14 +73,14 @@ while True:
     else:
         print("Movement lost")
 
-    # Display the frame
-    cv2.imshow("Frame", frame)
+    # Display the frame on the screen
+    cv2.imshow("Live Video Feed", frame)
 
     # Break the loop if 'q' is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release the webcam, close all windows, and cleanup GPIO
+# Release the webcam and cleanup GPIO
 cap.release()
 cv2.destroyAllWindows()
 servo.stop()
