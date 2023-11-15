@@ -38,6 +38,10 @@ threshold = 25  # Adjust the threshold based on your environment
 # Initialize background subtraction
 fgbg = cv2.createBackgroundSubtractorMOG2()
 
+# Define delay_x and delay_y
+delay_x = 0.01  # Adjust the delay based on your stepper motor and requirements
+delay_y = 0.01
+
 while True:
     ret, frame = cap.read()
 
