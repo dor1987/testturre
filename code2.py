@@ -83,7 +83,7 @@ while True:
             print("Movement lost")
 
     # Resize the frame to fit the 7-inch screen
-    resized_frame = cv2.resize(frame, (800, 480))  # Adjust the size as needed
+    resized_frame = cv2.resize(frame, (400, 240))  # Adjust the size as needed
 
     # Display the resized frame on the screen
     cv2.imshow("Live Video Feed", resized_frame)
