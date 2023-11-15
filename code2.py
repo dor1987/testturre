@@ -54,24 +54,29 @@ while True:
     # Find contours in the thresholded image
     contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    if len(contours) > 0:
-        # Calculate the centroid of the first contour (assuming only one person is present)
-        M = cv2.moments(contours[0])
-        cx = int(M["m10"] / M["m00"])
-        cy = int(M["m01"] / M["m00"])
+    if contours:
+        # Assuming only one person is present, use the largest contour
+        contour = max(contours, key=cv2.contourArea)
+        area = cv2.contourArea(contour)
 
-        # Your logic for aiming the turret using stepper motors
-        # ...
+        if min_area < area < max_area:
+            # Calculate the centroid of the contour
+            M = cv2.moments(contour)
+            cx = int(M["m10"] / (M["m00"] + 1e-5))
+            cy = int(M["m01"] / (M["m00"] + 1e-5))
 
-        # Move stepper motors based on the calculated centroid
-        move_stepper_x(cx, delay_x)
-        move_stepper_y(cy, delay_y)
+            # Your logic for aiming the turret using stepper motors
+            # ...
 
-        # Your logic for firing the Nerf gun
-        shoot()
-        print("Movement detected")
-    else:
-        print("Movement lost")
+            # Move stepper motors based on the calculated centroid
+            move_stepper_x(cx, delay_x)
+            move_stepper_y(cy, delay_y)
+
+            # Your logic for firing the Nerf gun
+            shoot()
+            print("Movement detected")
+        else:
+            print("Movement lost")
 
     # Display the frame on the screen
     cv2.imshow("Live Video Feed", frame)
