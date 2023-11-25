@@ -316,20 +316,24 @@ class Turret(object):
 
         # Check if enough time has passed since the last trigger pull
         if current_time - self.last_trigger_time >= self.trigger_cooldown:
-            # Perform trigger pull action
-            print("Trigger pulled!")
-            # Add servo control code here (adjust channel and target values)
-            self.servo_controller.setTarget(0, 7000)  # Adjust channel and target values accordingly
+            # Perform trigger pull action in a separate thread
+            threading.Thread(target=self._trigger_pull_thread).start()
 
             # Update the last trigger time
             self.last_trigger_time = current_time
 
-            # Delay for a short period (adjust as needed)
-            time.sleep(1)
+    def _trigger_pull_thread(self):
+        # Perform trigger pull action
+        print("Trigger pulled!")
+        # Add servo control code here (adjust channel and target values)
+        self.servo_controller.setTarget(0, 7000)  # Adjust channel and target values accordingly
 
-            # Move the turret back to its original position
-            self.move_turret_to_original_position()
-            
+        # Delay for a short period (adjust as needed)
+        time.sleep(1)
+
+        # Move the turret back to its original position after the delay
+        self.move_turret_to_original_position()
+  
     def move_turret_to_original_position(self):
         # Move the turret back to its original servo position
         self.servo_controller.setTarget(0, self.original_servo_position)
