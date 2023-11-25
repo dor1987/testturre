@@ -10,7 +10,6 @@ import sys
 import termios
 import contextlib
 import maestro
-import time
 
 import imutils
 import RPi.GPIO as GPIO
@@ -142,10 +141,16 @@ class Turret(object):
         #self.sm_y = self.mh.getStepper(200, 2)
         #self.sm_y.setSpeed(5)
         self.current_y_steps = 0
-        servo = maestro.Controller()
-        servo.setAccel(0,4)
-        servo.setTarget(0,12000)
+        # Initialize Maestro servo controller
+        self.servo_controller = maestro.Controller()
+         # Anti-spam defense variables
 
+        # Store the original position for reference
+        self.original_servo_position = 6000  # Center position
+        
+        self.last_trigger_time = 0
+        self.trigger_cooldown = 2  # Cooldown period in seconds
+        
         #GPIO.setmode(GPIO.BCM)
         #GPIO.setup(RELAY_PIN, GPIO.OUT)
         #GPIO.output(RELAY_PIN, GPIO.LOW)
@@ -157,6 +162,10 @@ class Turret(object):
         print("Please calibrate the yaw of the gun so that it aligns with the camera. Commands: (a) moves left, (d) moves right. Press (enter) to finish.\n")
         self.__calibrate_x_axis()
 
+
+        # Store the original position after calibration
+        self.original_servo_position = self.servo_controller.getPosition(0)  # Assuming servo is connected to channel 0
+        
         print("Calibration finished.")
 
     def __calibrate_x_axis(self):
@@ -301,29 +310,37 @@ class Turret(object):
 
             except (KeyboardInterrupt, EOFError):
                 pass
+                
+    def trigger_pull(self):
+        current_time = time.time()
 
+        # Check if enough time has passed since the last trigger pull
+        if current_time - self.last_trigger_time >= self.trigger_cooldown:
+            # Perform trigger pull action
+            print("Trigger pulled!")
+            # Add servo control code here (adjust channel and target values)
+            self.servo_controller.setTarget(0, 7000)  # Adjust channel and target values accordingly
+
+            # Update the last trigger time
+            self.last_trigger_time = current_time
+
+            # Delay for a short period (adjust as needed)
+            time.sleep(1)
+
+            # Move the turret back to its original position
+            self.move_turret_to_original_position()
+            
+    def move_turret_to_original_position(self):
+        # Move the turret back to its original servo position
+        self.servo_controller.setTarget(0, self.original_servo_position)
+    
     @staticmethod
     def fire():
         print('fire')
-        Turret.pullTrigger()
+        t.trigger_pull()
        # GPIO.output(RELAY_PIN, GPIO.HIGH)
       #  time.sleep(1)
         #GPIO.output(RELAY_PIN, GPIO.LOW)
-        
-    @staticmethod
-    def pullTrigger():
-        servo = maestro.Controller()
-        servo.setAccel(0,8)
-        print("pullTrigger")
-        print(servo.getPosition(1))
-
-        if servo.getPosition(1) == 12000:
-            servo.setTarget(0,6000)
-
-        elif servo.getPosition(1) == 6000:
-            servo.setTarget(0,12000)
-        else:
-            print(servo.getPosition(1))
 
     @staticmethod
     def move_forward(motor, steps):
